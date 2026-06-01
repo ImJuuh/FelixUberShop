@@ -43,10 +43,13 @@
 
                     if (perfil.equals("cliente")) {
                         response.sendRedirect("dashboard_cliente.jsp");
+                        return;
                     } else if (perfil.equals("funcionario")) {
                         response.sendRedirect("dashboard_funcionario.jsp");
+                        return;
                     } else if (perfil.equals("admin")) {
                         response.sendRedirect("dashboard_admin.jsp");
+                        return;
                     }
 
                 } else {
