@@ -142,7 +142,7 @@
                 <p>Navegue pela página principal para ver o catálogo de produtos e adicionar novos itens ao carrinho.</p>
             </a>
 
-            <a href="perfil.jsp" class="opcao-card">
+            <a href="perfil_cliente.jsp" class="opcao-card">
                 <h3>👤 Dados da Conta</h3>
                 <p>Atualize as suas informações pessoais, gerencie as suas moradas de entrega ou altere a password.</p>
             </a>
