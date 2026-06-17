@@ -1,21 +1,22 @@
 /* ==========================================================================
    1. CONFIGURAÇÕES GERAIS E FORMULÁRIOS (LOGIN / REGISTO)
    ========================================================================== */
+
 :root {
-    --primary-color: #10b981;       /* Verde Esmeralda Moderno */
-    --primary-hover: #059669;       /* Verde mais escuro para o efeito Hover */
-    --background-start: #f0fdf4;    /* Gradiente suave de fundo */
+    --primary-color: #10b981;
+    --primary-hover: #059669;
+    --background-start: #f0fdf4;
     --background-end: #e6f4ea;
-    --text-main: #1f2937;           /* Cinza escuro profissional */
-    --text-muted: #6b7280;          /* Cinza secundário para textos auxiliares */
-    --border-color: #e5e7eb;        /* Bordas finas e limpas */
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --border-color: #e5e7eb;
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', Arial, sans-serif;
 }
 
 body {
@@ -67,7 +68,12 @@ label {
 }
 
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="date"],
+textarea,
+select {
     width: 100%;
     padding: 12px 16px;
     font-size: 14px;
@@ -80,13 +86,23 @@ input[type="password"] {
 }
 
 input[type="text"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+textarea:focus,
+select:focus {
     background-color: #ffffff;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
 }
 
-input[type="submit"] {
+textarea {
+    resize: vertical;
+}
+
+input[type="submit"],
+.btn {
     width: 100%;
     padding: 14px;
     background: var(--primary-color);
@@ -99,13 +115,18 @@ input[type="submit"] {
     transition: background 0.2s ease, transform 0.1s ease;
     margin-top: 10px;
     box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:hover,
+.btn:hover {
     background: var(--primary-hover);
 }
 
-input[type="submit"]:active {
+input[type="submit"]:active,
+.btn:active {
     transform: scale(0.98);
 }
 
@@ -113,6 +134,18 @@ input[type="submit"]:active {
     background: #fef2f2;
     color: #991b1b;
     border: 1px solid #fca5a5;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.sucesso {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
     padding: 12px;
     border-radius: 8px;
     margin-bottom: 24px;
@@ -152,8 +185,9 @@ input[type="submit"]:active {
 
 
 /* ==========================================================================
-   2. PÁGINA DE PRODUTOS (TEU CÓDIGO ORIGINAL PRESERVADO)
+   2. PÁGINA DE PRODUTOS
    ========================================================================== */
+
 .container-produtos {
     width: 1000px;
     max-width: 95%;
@@ -254,8 +288,9 @@ input[type="submit"]:active {
 
 
 /* ==========================================================================
-   3. TABELAS / ENCOMENDAS (TEU CÓDIGO ORIGINAL PRESERVADO)
+   3. TABELAS / ENCOMENDAS
    ========================================================================== */
+
 .container-tabela {
     width: 1100px;
     max-width: 95%;
@@ -324,9 +359,10 @@ input[type="submit"]:active {
     padding: 25px;
 }
 
-/* =========================
-   FORMULÁRIOS DE ADMINISTRAÇÃO
-   ========================= */
+
+/* ==========================================================================
+   4. FORMULÁRIOS DE ADMINISTRAÇÃO
+   ========================================================================== */
 
 .form-admin-box {
     background: #fbfffb;
@@ -352,23 +388,10 @@ input[type="submit"]:active {
     color: #666666;
 }
 
-@media (max-width: 700px) {
-    .form-row {
-        grid-template-columns: 1fr;
-    }
 
-    .tabela {
-        font-size: 12px;
-    }
-
-    .tabela th,
-    .tabela td {
-        padding: 8px;
-    }
-}
-/* =========================
-   MENU ADMIN
-   ========================= */
+/* ==========================================================================
+   5. MENU ADMIN / FUNCIONÁRIO
+   ========================================================================== */
 
 .admin-menu {
     display: grid;
@@ -404,14 +427,17 @@ input[type="submit"]:active {
     font-size: 14px;
 }
 
-/* =========================
-   PÁGINA INICIAL
-   ========================= */
+
+/* ==========================================================================
+   6. PÁGINA INICIAL
+   ========================================================================== */
 
 body.pagina-inicial {
     display: block;
     background: #f8fafc;
+    padding: 0;
 }
+
 .navbar-principal {
     background: #ffffff;
     border-bottom: 1px solid #e5e7eb;
@@ -548,29 +574,10 @@ body.pagina-inicial {
     background: #f0fdf4;
 }
 
-.contactos-section {
-    width: 1000px;
-    max-width: 95%;
-    margin: 40px auto;
-    background: white;
-    padding: 35px;
-    border-radius: 18px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.10);
-    text-align: center;
-}
 
-.contactos-section h2 {
-    color: #10b981;
-    margin-top: 0;
-}
-
-.contactos-section p {
-    color: #4b5563;
-}
-
-/* =========================
-   FOOTER MODERNO
-   ========================= */
+/* ==========================================================================
+   7. FOOTER MODERNO
+   ========================================================================== */
 
 .footer-principal {
     background: #111827;
@@ -634,42 +641,10 @@ body.pagina-inicial {
     font-size: 13px;
 }
 
-@media (max-width: 850px) {
-    .footer-conteudo {
-        grid-template-columns: 1fr 1fr;
-    }
-}
 
-@media (max-width: 550px) {
-    .footer-conteudo {
-        grid-template-columns: 1fr;
-        text-align: center;
-    }
-}
-
-@media (max-width: 700px) {
-    .navbar-principal {
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .navbar-principal .nav-menu {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .hero-banner h2 {
-        font-size: 28px;
-    }
-
-    .hero-botoes {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    /* =========================
-   ESTADOS DAS ENCOMENDAS
-   ========================= */
+/* ==========================================================================
+   8. ESTADOS DAS ENCOMENDAS
+   ========================================================================== */
 
 .badge-pendente {
     background: #fff7ed;
@@ -697,9 +672,9 @@ body.pagina-inicial {
 }
 
 
-/* =========================
-   PERFIS DE UTILIZADORES
-   ========================= */
+/* ==========================================================================
+   9. PERFIS DE UTILIZADORES
+   ========================================================================== */
 
 .badge-admin {
     background: #f3e8ff;
@@ -715,5 +690,183 @@ body.pagina-inicial {
     background: #ecfdf5;
     color: #047857;
 }
+
+
+/* ==========================================================================
+   10. DASHBOARD CLIENTE
+   ========================================================================== */
+
+body.pagina-dashboard {
+    display: block;
+    background: #f8fafc;
+    padding: 0;
 }
 
+.navbar-dashboard {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-dashboard .logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: #10b981;
+    text-decoration: none;
+}
+
+.navbar-dashboard .user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.navbar-dashboard .user-info span {
+    color: #374151;
+    font-size: 14px;
+}
+
+.navbar-dashboard .user-info a {
+    color: #ef4444;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.navbar-dashboard .user-info a:hover {
+    text-decoration: underline;
+}
+
+.conteudo-painel {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.banner-cliente {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 32px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.18);
+}
+
+.banner-cliente h2 {
+    margin: 0 0 8px 0;
+    font-weight: 700;
+    font-size: 28px;
+}
+
+.banner-cliente p {
+    opacity: 0.95;
+    margin: 0;
+}
+
+.menu-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.opcao-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 25px;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    color: inherit;
+}
+
+.opcao-card:hover {
+    transform: translateY(-4px);
+    border-color: #10b981;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.07);
+}
+
+.opcao-card h3 {
+    color: #2e7d32;
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+
+.opcao-card p {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 0;
+}
+
+
+/* ==========================================================================
+   11. RESPONSIVO
+   ========================================================================== */
+
+@media (max-width: 850px) {
+    .footer-conteudo {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .tabela {
+        font-size: 12px;
+    }
+
+    .tabela th,
+    .tabela td {
+        padding: 8px;
+    }
+
+    .navbar-principal {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .navbar-principal .nav-menu {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hero-banner h2 {
+        font-size: 28px;
+    }
+
+    .hero-botoes {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 650px) {
+    .navbar-dashboard {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .navbar-dashboard .user-info {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .banner-cliente h2 {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 550px) {
+    .footer-conteudo {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+}
