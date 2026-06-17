@@ -666,4 +666,54 @@ body.pagina-inicial {
         flex-direction: column;
         align-items: center;
     }
+
+    /* =========================
+   ESTADOS DAS ENCOMENDAS
+   ========================= */
+
+.badge-pendente {
+    background: #fff7ed;
+    color: #c2410c;
 }
+
+.badge-validada {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.badge-entregue {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.badge-cancelada {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.sem-acao {
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+
+/* =========================
+   PERFIS DE UTILIZADORES
+   ========================= */
+
+.badge-admin {
+    background: #f3e8ff;
+    color: #7e22ce;
+}
+
+.badge-funcionario {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.badge-cliente {
+    background: #ecfdf5;
+    color: #047857;
+}
+}
+
