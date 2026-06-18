@@ -16,6 +16,12 @@
 
         } else {
 
+            /*
+             * A password escrita pelo utilizador é transformada em hash.
+             * Depois é comparada com o hash guardado na base de dados.
+             */
+            String passwordHash = gerarHash(password);
+
             Connection conn = null;
             PreparedStatement ps = null;
             ResultSet rs = null;
@@ -23,10 +29,13 @@
             try {
                 conn = ligarBD();
 
-                String sql = "SELECT * FROM utilizadores WHERE username = ? AND password = ? AND ativo = TRUE";
+                String sql =
+                    "SELECT * FROM utilizadores " +
+                    "WHERE username = ? AND password = ? AND ativo = TRUE";
+
                 ps = conn.prepareStatement(sql);
                 ps.setString(1, username);
-                ps.setString(2, password);
+                ps.setString(2, passwordHash);
 
                 rs = ps.executeQuery();
 
@@ -44,9 +53,11 @@
                     if (perfil.equals("cliente")) {
                         response.sendRedirect("dashboard_cliente.jsp");
                         return;
+
                     } else if (perfil.equals("funcionario")) {
                         response.sendRedirect("dashboard_funcionario.jsp");
                         return;
+
                     } else if (perfil.equals("admin")) {
                         response.sendRedirect("dashboard_admin.jsp");
                         return;
@@ -101,12 +112,20 @@
 
         <div class="form-group">
             <label for="username">Username</label>
-            <input type="text" id="username" name="username" placeholder="Introduza o username">
+            <input type="text"
+                   id="username"
+                   name="username"
+                   placeholder="Introduza o username"
+                   autocomplete="username">
         </div>
 
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Introduza a password">
+            <input type="password"
+                   id="password"
+                   name="password"
+                   placeholder="Introduza a password"
+                   autocomplete="current-password">
         </div>
 
         <input type="submit" value="Entrar na Conta">
