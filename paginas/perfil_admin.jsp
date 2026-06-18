@@ -2,6 +2,13 @@
 <%@ include file="../basedados/basedados.h" %>
 
 <%
+    /*
+     * Página de perfil do administrador.
+     * Permite consultar e editar os dados pessoais.
+     * A password nunca é mostrada no formulário.
+     * Só é alterada se o administrador escrever uma nova password.
+     */
+
     String perfil = (String) session.getAttribute("perfil");
     Integer userId = (Integer) session.getAttribute("user_id");
 
@@ -18,7 +25,6 @@
     String email = "";
     String telefone = "";
     String morada = "";
-    String password = "";
 
     Connection conn = null;
     PreparedStatement ps = null;
@@ -43,31 +49,65 @@
 
             } else {
 
-                String sql =
-                    "UPDATE utilizadores SET nome = ?, email = ?, telefone = ?, morada = ?, password = ? " +
-                    "WHERE id = ? AND perfil = 'admin'";
+                /*
+                 * Se a password estiver vazia, atualiza apenas os dados pessoais.
+                 */
+                if (novaPassword == null || novaPassword.trim().isEmpty()) {
 
-                ps = conn.prepareStatement(sql);
-                ps.setString(1, novoNome);
-                ps.setString(2, novoEmail);
-                ps.setString(3, novoTelefone);
-                ps.setString(4, novaMorada);
-                ps.setString(5, novaPassword);
-                ps.setInt(6, userId);
+                    String sql =
+                        "UPDATE utilizadores " +
+                        "SET nome = ?, email = ?, telefone = ?, morada = ? " +
+                        "WHERE id = ? AND perfil = 'admin'";
 
-                ps.executeUpdate();
-                ps.close();
+                    ps = conn.prepareStatement(sql);
+                    ps.setString(1, novoNome);
+                    ps.setString(2, novoEmail);
+                    ps.setString(3, novoTelefone);
+                    ps.setString(4, novaMorada);
+                    ps.setInt(5, userId);
+
+                    ps.executeUpdate();
+                    ps.close();
+
+                } else {
+
+                    /*
+                     * Se o administrador escrever uma nova password,
+                     * a password é convertida para hash antes de ser guardada.
+                     */
+                    String passwordEmHash = gerarHash(novaPassword);
+
+                    String sql =
+                        "UPDATE utilizadores " +
+                        "SET nome = ?, email = ?, telefone = ?, morada = ?, password = ? " +
+                        "WHERE id = ? AND perfil = 'admin'";
+
+                    ps = conn.prepareStatement(sql);
+                    ps.setString(1, novoNome);
+                    ps.setString(2, novoEmail);
+                    ps.setString(3, novoTelefone);
+                    ps.setString(4, novaMorada);
+                    ps.setString(5, passwordEmHash);
+                    ps.setInt(6, userId);
+
+                    ps.executeUpdate();
+                    ps.close();
+                }
 
                 session.setAttribute("nome", novoNome);
-
                 sucesso = "Dados atualizados com sucesso.";
             }
         }
 
         /*
          * Buscar dados atuais do administrador.
+         * A password NÃO é selecionada para nunca aparecer no formulário.
          */
-        String sqlDados = "SELECT * FROM utilizadores WHERE id = ? AND perfil = 'admin'";
+        String sqlDados =
+            "SELECT username, nome, email, telefone, morada " +
+            "FROM utilizadores " +
+            "WHERE id = ? AND perfil = 'admin'";
+
         ps = conn.prepareStatement(sqlDados);
         ps.setInt(1, userId);
         rs = ps.executeQuery();
@@ -78,7 +118,6 @@
             email = rs.getString("email");
             telefone = rs.getString("telefone");
             morada = rs.getString("morada");
-            password = rs.getString("password");
         }
 
     } catch (Exception e) {
@@ -95,10 +134,11 @@
         }
     }
 
+    if (username == null) username = "";
+    if (nome == null) nome = "";
     if (email == null) email = "";
     if (telefone == null) telefone = "";
     if (morada == null) morada = "";
-    if (password == null) password = "";
 %>
 
 <!DOCTYPE html>
@@ -109,14 +149,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        .container {
+            max-width: 550px !important;
+            width: 100% !important;
+            margin: 40px auto;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .campo-total {
+            grid-column: span 2;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+        }
+
+        .botao-container {
+            grid-column: span 2;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .botao-container input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .info-password {
+            font-size: 11px;
+            color: #777;
+            display: block;
+            margin-top: 3px;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .campo-total,
+            .botao-container {
+                grid-column: span 1;
+            }
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
 
-    <div class="header">
-        <h1>Perfil do Administrador</h1>
-        <p>Consulte e edite os seus dados pessoais.</p>
+    <div class="header" style="text-align: center; margin-bottom: 20px;">
+        <h1 style="margin: 0 0 5px 0;">Perfil do Administrador</h1>
+        <p style="margin: 0; color: #666;">Consulte e edite os seus dados pessoais.</p>
     </div>
 
     <% if (!erro.equals("")) { %>
@@ -129,43 +232,58 @@
 
     <form method="post" action="perfil_admin.jsp">
 
-        <div class="form-group">
-            <label>Username</label>
-            <input type="text" value="<%= username %>" disabled>
-        </div>
+        <div class="form-grid">
 
-        <div class="form-group">
-            <label for="nome">Nome *</label>
-            <input type="text" id="nome" name="nome" value="<%= nome %>" required>
-        </div>
+            <div class="form-group campo-total">
+                <label>Username</label>
+                <input type="text" value="<%= username %>" disabled>
+            </div>
 
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" value="<%= email %>">
-        </div>
+            <div class="form-group campo-total">
+                <label for="nome">Nome *</label>
+                <input type="text" id="nome" name="nome" value="<%= nome %>" required>
+            </div>
 
-        <div class="form-group">
-            <label for="telefone">Telefone</label>
-            <input type="text" id="telefone" name="telefone" value="<%= telefone %>">
-        </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="<%= email %>">
+            </div>
 
-        <div class="form-group">
-            <label for="morada">Morada</label>
-            <textarea id="morada" name="morada" rows="3"><%= morada %></textarea>
-        </div>
+            <div class="form-group">
+                <label for="telefone">Telefone</label>
+                <input type="text" id="telefone" name="telefone" value="<%= telefone %>">
+            </div>
 
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="text" id="password" name="password" value="<%= password %>">
-        </div>
+            <div class="form-group campo-total">
+                <label for="morada">Morada</label>
+                <textarea id="morada" name="morada" rows="2"><%= morada %></textarea>
+            </div>
 
-        <input type="submit" value="Guardar Alterações">
+            <div class="form-group campo-total">
+                <label for="password">Nova Password</label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       value=""
+                       autocomplete="new-password"
+                       placeholder="Nova Senha">
+            </div>
+
+            <div class="botao-container">
+                <input type="submit" value="Guardar Alterações">
+            </div>
+
+        </div>
 
     </form>
 
     <div class="links">
-        <p><a href="dashboard_admin.jsp">Voltar à administração</a></p>
-        <p><a href="logout.jsp">Terminar sessão</a></p>
+        <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 15px;">
+        <p>
+            <a href="dashboard_admin.jsp">Voltar à administração</a>
+            |
+            <a href="logout.jsp">Terminar sessão</a>
+        </p>
     </div>
 
 </div>
