@@ -1,4 +1,5 @@
 <%@ page import="java.sql.*" %>
+<%@ page import="java.security.MessageDigest" %>
 
 <%!
     /*
@@ -31,5 +32,31 @@
         }
 
         return conn;
+    }
+
+    /*
+     * Função responsável por gerar o hash SHA-256 da password.
+     * Assim a password não fica guardada em texto normal na base de dados.
+     */
+    public String gerarHash(String password) {
+        String hash = "";
+
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] bytes = md.digest(password.getBytes("UTF-8"));
+
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < bytes.length; i++) {
+                sb.append(String.format("%02x", bytes[i]));
+            }
+
+            hash = sb.toString();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return hash;
     }
 %>
