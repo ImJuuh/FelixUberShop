@@ -145,14 +145,13 @@
                     <td style="font-weight: 600;"><%= String.format("%.2f", total) %> €</td>
                     <td><span class="badge"><%= estado %></span></td>
                     <td style="text-align: center;">
-                        <% if (estado.equalsIgnoreCase("pendente")) { %>
-                            <a class="btn-pequeno danger" href="cancelar_encomenda.jsp?id=<%= encomendaId %>" 
-                               onclick="return confirm('Tem a certeza que deseja cancelar esta encomenda?');">
-                                Cancelar
+                            <a class="btn-pequeno" href="editar_encomenda.jsp?id=<%= encomendaId %>">
+                                Editar
                             </a>
-                        <% } else { %>
-                            <span style="color: #9ca3af; font-size: 13px;">Sem ações</span>
-                        <% } %>
+
+                        <a class="btn-pequeno danger" href="cancelar_encomenda.jsp?id=<%= encomendaId %>" onclick="return confirm('Tem a certeza que deseja cancelar esta encomenda?');">
+                                Cancelar
+                        </a>
                     </td>
                 </tr>
 
