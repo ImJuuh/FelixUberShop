@@ -1,13 +1,8 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ include file="../basedados/basedados.h" %>
 
 <%
-    /*
-     * Página de perfil do cliente.
-     * Permite consultar e editar os dados pessoais.
-     * A password nunca é mostrada no formulário.
-     * Só é alterada se o cliente escrever uma nova password.
-     */
+    request.setCharacterEncoding("UTF-8");
 
     String perfil = (String) session.getAttribute("perfil");
     Integer userId = (Integer) session.getAttribute("user_id");
@@ -32,10 +27,6 @@
 
     try {
         conn = ligarBD();
-
-        /*
-         * Se o formulário foi submetido, atualiza os dados.
-         */
         if (request.getMethod().equalsIgnoreCase("POST")) {
 
             String novoNome = request.getParameter("nome");
@@ -46,6 +37,7 @@
 
             if (novoNome == null || novoNome.trim().isEmpty()) {
                 erro = "O nome é obrigatório.";
+
             } else {
 
                 /*
@@ -73,7 +65,6 @@
                     /*
                      * Se o cliente escreveu uma nova password,
                      * gera hash e atualiza também a password.
-                     * A função gerarHash() deve estar no basedados.h.
                      */
                     String passwordEmHash = gerarHash(novaPassword);
 
@@ -230,7 +221,7 @@
         <div class="sucesso"><%= sucesso %></div>
     <% } %>
 
-    <form method="post" action="perfil_cliente.jsp">
+    <form method="post" action="perfil_cliente.jsp" accept-charset="UTF-8">
 
         <div class="form-grid">
 
@@ -267,6 +258,7 @@
                        value=""
                        autocomplete="new-password"
                        placeholder="Nova Password">
+                <span class="info-password">Deixe vazio para manter a password atual.</span>
             </div>
 
             <div class="botao-container">
