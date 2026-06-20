@@ -1,9 +1,10 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ include file="../basedados/basedados.h" %>
 
 <%
+    request.setCharacterEncoding("UTF-8");
+
     String perfil = (String) session.getAttribute("perfil");
-    String nomeSessao = (String) session.getAttribute("nome");
     Integer userId = (Integer) session.getAttribute("user_id");
 
     if (perfil == null || !perfil.equals("cliente") || userId == null) {
@@ -14,6 +15,7 @@
     Connection conn = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
+
     String erro = "";
 %>
 
@@ -21,82 +23,196 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Minhas Encomendas - FelixUberShop</title>
+    <title>As Minhas Encomendas - FelixUberShop</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
 
     <style>
-        /* Ajustes específicos para a fluidez da página de listagem */
         body {
-            display: block;
+            display: block !important;
+            padding: 20px;
             background: #f8fafc;
         }
 
-        .navbar-encomendas {
-            background: #ffffff;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+        .container-historico {
+            width: 1200px;
+            max-width: 95%;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
         }
 
-        .navbar-encomendas .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: #10b981;
-            text-decoration: none;
+        .topo-historico h1 {
+            margin: 0;
+            color: #1f2937;
         }
 
-        .navbar-encomendas .user-info a {
-            color: #ef4444;
-            text-decoration: none;
-            font-weight: 600;
-            margin-left: 15px;
+        .topo-historico p {
+            color: #6b7280;
+            margin-top: 8px;
+        }
+
+        .tabela {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
             font-size: 14px;
         }
 
-        /* Sobrescreve margens para encaixar abaixo da navbar */
-        .container-tabela {
-            margin-top: 30px;
-            margin-bottom: 50px;
+        .tabela th {
+            background: #2e7d32;
+            color: white;
+            padding: 14px;
+            text-align: left;
+        }
+
+        .tabela td {
+            padding: 14px;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: top;
+        }
+
+        .codigo {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .lista-produtos {
+            line-height: 1.7;
+        }
+
+        .produto-item {
+            display: block;
+            color: #111827;
+        }
+
+        .total {
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .badge-pendente {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-validada {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .badge-entregue {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-cancelada {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-pequeno {
+            display: inline-block;
+            padding: 8px 13px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+            background: #2e7d32;
+            color: white;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .btn-pequeno.danger {
+            background: #c62828;
+        }
+
+        .sem-dados {
+            text-align: center;
+            padding: 25px;
+            color: #777;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .links a {
+            color: #10b981;
+            font-weight: bold;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+
+        @media (max-width: 800px) {
+            .tabela {
+                font-size: 12px;
+            }
+
+            .tabela th,
+            .tabela td {
+                padding: 8px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar-encomendas">
-        <a href="index.jsp" class="logo">FelixUberShop</a>
-        <div class="user-info">
-            <span>Olá, <strong><%= nomeSessao %></strong></span>
-            <a href="logout.jsp">Terminar Sessão</a>
-        </div>
-    </nav>
+<div class="container-historico">
 
-    <div class="container-tabela">
+    <div class="topo-historico">
+        <h1>Histórico de Encomendas</h1>
+        <p>Consulte o estado e os detalhes das suas compras realizadas.</p>
+    </div>
 
-        <div class="header" style="text-align: left; margin-bottom: 20px;">
-            <h1 style="font-size: 24px; color: #1f2937;">Histórico de Encomendas</h1>
-            <p style="color: #6b7280; font-size: 14px;">Consulte o estado e os detalhes das suas compras realizadas.</p>
-        </div>
+    <% if (!erro.equals("")) { %>
+        <div class="erro"><%= erro %></div>
+    <% } %>
+
+    <table class="tabela">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Data</th>
+                <th>Produtos</th>
+                <th>Total Pago</th>
+                <th>Estado</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+
+        <tbody>
 
         <%
             try {
                 conn = ligarBD();
 
+                /*
+                 * Agora agrupamos por encomenda.
+                 * Assim aparece uma linha por encomenda,
+                 * e dentro dessa linha aparecem todos os produtos.
+                 */
                 String sql =
                     "SELECT e.id, e.codigo_validacao, e.data_encomenda, e.estado, e.total, " +
-                    "p.nome AS produto, ep.quantidade, ep.preco_unitario " +
+                    "GROUP_CONCAT(CONCAT(p.nome, ' x', ep.quantidade, ' — ', FORMAT(ep.preco_unitario, 2), ' €') SEPARATOR '<br>') AS produtos " +
                     "FROM encomendas e " +
                     "INNER JOIN encomenda_produtos ep ON e.id = ep.encomenda_id " +
                     "INNER JOIN produtos p ON ep.produto_id = p.id " +
                     "WHERE e.cliente_id = ? " +
+                    "GROUP BY e.id, e.codigo_validacao, e.data_encomenda, e.estado, e.total " +
                     "ORDER BY e.data_encomenda DESC";
 
                 ps = conn.prepareStatement(sql);
@@ -104,81 +220,88 @@
                 rs = ps.executeQuery();
 
                 boolean temEncomendas = false;
-        %>
 
-        <table class="tabela">
-            <thead>
-                <tr>
-                    <th>Código</th>
-                    <th>Data</th>
-                    <th>Produto</th>
-                    <th style="text-align: center;">Qtd.</th>
-                    <th>Preço Unit.</th>
-                    <th>Total Pago</th>
-                    <th>Estado</th>
-                    <th style="text-align: center;">Ações</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-            <%
                 while (rs.next()) {
                     temEncomendas = true;
 
                     int encomendaId = rs.getInt("id");
                     String codigo = rs.getString("codigo_validacao");
                     String data = rs.getString("data_encomenda");
-                    String produto = rs.getString("produto");
-                    int quantidade = rs.getInt("quantidade");
-                    double preco = rs.getDouble("preco_unitario");
-                    double total = rs.getDouble("total");
                     String estado = rs.getString("estado");
-            %>
+                    double total = rs.getDouble("total");
+                    String produtos = rs.getString("produtos");
 
-                <tr>
-                    <td style="font-weight: 600; color: #10b981;">#<%= codigo %></td>
-                    <td><%= data %></td>
-                    <td><%= produto %></td>
-                    <td style="text-align: center;"><%= quantidade %></td>
-                    <td><%= String.format("%.2f", preco) %> €</td>
-                    <td style="font-weight: 600;"><%= String.format("%.2f", total) %> €</td>
-                    <td><span class="badge"><%= estado %></span></td>
-                    <td style="text-align: center;">
-                            <a class="btn-pequeno" href="editar_encomenda.jsp?id=<%= encomendaId %>">
-                                Editar
-                            </a>
+                    String classeEstado = "badge-pendente";
 
-                        <a class="btn-pequeno danger" href="cancelar_encomenda.jsp?id=<%= encomendaId %>" onclick="return confirm('Tem a certeza que deseja cancelar esta encomenda?');">
-                                Cancelar
+                    if (estado.equals("validada")) {
+                        classeEstado = "badge-validada";
+                    } else if (estado.equals("entregue")) {
+                        classeEstado = "badge-entregue";
+                    } else if (estado.equals("cancelada")) {
+                        classeEstado = "badge-cancelada";
+                    }
+        %>
+
+            <tr>
+                <td class="codigo">#<%= codigo %></td>
+
+                <td><%= data %></td>
+
+                <td class="lista-produtos">
+                    <%= produtos %>
+                </td>
+
+                <td class="total"><%= String.format("%.2f", total) %> €</td>
+
+                <td>
+                    <span class="badge <%= classeEstado %>">
+                        <%= estado %>
+                    </span>
+                </td>
+
+                <td>
+                    <% if (estado.equals("pendente")) { %>
+
+                        <a class="btn-pequeno" href="editar_encomenda.jsp?id=<%= encomendaId %>">
+                            Editar
                         </a>
-                    </td>
-                </tr>
 
-            <%
+                        <a class="btn-pequeno danger"
+                           href="cancelar_encomenda.jsp?id=<%= encomendaId %>"
+                           onclick="return confirm('Tem a certeza que deseja cancelar esta encomenda?');">
+                            Cancelar
+                        </a>
+
+                    <% } else { %>
+                        <span style="color:#9ca3af;">Sem ações</span>
+                    <% } %>
+                </td>
+            </tr>
+
+        <%
                 }
 
                 if (!temEncomendas) {
-            %>
+        %>
 
-                <tr>
-                    <td colspan="8" class="sem-dados">Ainda não realizou nenhuma encomenda no nosso sistema.</td>
-                </tr>
-
-            <%
-                }
-            %>
-
-            </tbody>
-        </table>
+            <tr>
+                <td colspan="6" class="sem-dados">
+                    Ainda não realizou nenhuma encomenda.
+                </td>
+            </tr>
 
         <%
+                }
+
             } catch (Exception e) {
-                erro = "Não foi possível carregar as suas encomendas de momento.";
                 e.printStackTrace();
         %>
 
-            <div class="erro"><%= erro %></div>
+            <tr>
+                <td colspan="6" class="sem-dados">
+                    Erro ao carregar encomendas.
+                </td>
+            </tr>
 
         <%
             } finally {
@@ -192,12 +315,16 @@
             }
         %>
 
-        <div class="links" style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px;">
-            <a href="index.jsp" style="color: #6b7280;">← Continuar a Comprar</a>
-            <a href="dashboard_cliente.jsp" class="btn-pequeno" style="padding: 10px 20px; box-shadow: none;">Ir para o Painel Geral</a>
-        </div>
+        </tbody>
+    </table>
 
+    <div class="links">
+        <a href="nova_encomenda.jsp">Nova Encomenda</a>
+        |
+        <a href="dashboard_cliente.jsp">Voltar à área do cliente</a>
     </div>
+
+</div>
 
 </body>
 </html>
