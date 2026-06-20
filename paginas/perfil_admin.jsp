@@ -2,13 +2,6 @@
 <%@ include file="../basedados/basedados.h" %>
 
 <%
-    /*
-     * Página de perfil do administrador.
-     * Permite consultar e editar os dados pessoais.
-     * A password nunca é mostrada no formulário.
-     * Só é alterada se o administrador escrever uma nova password.
-     */
-
     String perfil = (String) session.getAttribute("perfil");
     Integer userId = (Integer) session.getAttribute("user_id");
 
@@ -33,9 +26,6 @@
     try {
         conn = ligarBD();
 
-        /*
-         * Atualizar dados do administrador.
-         */
         if (request.getMethod().equalsIgnoreCase("POST")) {
 
             String novoNome = request.getParameter("nome");
@@ -49,9 +39,6 @@
 
             } else {
 
-                /*
-                 * Se a password estiver vazia, atualiza apenas os dados pessoais.
-                 */
                 if (novaPassword == null || novaPassword.trim().isEmpty()) {
 
                     String sql =
@@ -70,11 +57,6 @@
                     ps.close();
 
                 } else {
-
-                    /*
-                     * Se o administrador escrever uma nova password,
-                     * a password é convertida para hash antes de ser guardada.
-                     */
                     String passwordEmHash = gerarHash(novaPassword);
 
                     String sql =
@@ -99,10 +81,6 @@
             }
         }
 
-        /*
-         * Buscar dados atuais do administrador.
-         * A password NÃO é selecionada para nunca aparecer no formulário.
-         */
         String sqlDados =
             "SELECT username, nome, email, telefone, morada " +
             "FROM utilizadores " +
