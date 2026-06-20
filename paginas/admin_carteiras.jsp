@@ -21,7 +21,7 @@
     PreparedStatement ps = null;
     ResultSet rs = null;
 
-    // --- CONFIGURAÇÃO DA PAGINAÇÃO ---
+    //CONFIGURAÇÃO DA PAGINAÇÃO 
     int itensPorPagina = 5; 
 
     int pagCarteiras = 1;
@@ -42,7 +42,7 @@
     int totalMov = 0, totalPagMov = 1;
 
 
-    // --- PROCESSAMENTO DO FORMULÁRIO (POST) ---
+    // pROCESSAMENTO DO FORM
     if (request.getMethod().equalsIgnoreCase("POST")) {
 
         String carteiraIdTexto = request.getParameter("carteira_id");
