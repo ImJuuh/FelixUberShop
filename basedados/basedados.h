@@ -3,8 +3,7 @@
 
 <%!
     /*
-     * Função responsável por criar a ligação à base de dados MySQL.
-     * Todas as páginas da aplicação devem usar esta função para aceder à BD.
+     * Função para ligar à base de dados FelixUberShop.
      */
     public Connection ligarBD() {
         Connection conn = null;
@@ -35,7 +34,7 @@
     }
 
     /*
-     * Função responsável por gerar o hash SHA-256 da password.
+     * Função para gerar hash SHA-256 da palavra-passe.
      * Assim a password não fica guardada em texto normal na base de dados.
      */
     public String gerarHash(String password) {
