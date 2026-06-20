@@ -1,11 +1,8 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ include file="../basedados/basedados.h" %>
 
 <%
-    /*
-     * Página de administração de produtos.
-     * Permite ao administrador inserir, editar, visualizar, inativar e reativar produtos.
-     */
+    request.setCharacterEncoding("UTF-8");
 
     String perfil = (String) session.getAttribute("perfil");
     String nomeSessao = (String) session.getAttribute("nome");
@@ -30,6 +27,28 @@
     String editPreco = "";
     String editStock = "";
     String editCategoria = "";
+
+    /*
+     * Paginação.
+     */
+    int paginaAtual = 1;
+    int produtosPorPagina = 10;
+    int totalProdutos = 0;
+    int totalPaginas = 1;
+
+    String paginaTexto = request.getParameter("pagina");
+
+    try {
+        if (paginaTexto != null && !paginaTexto.trim().isEmpty()) {
+            paginaAtual = Integer.parseInt(paginaTexto);
+        }
+    } catch (Exception e) {
+        paginaAtual = 1;
+    }
+
+    if (paginaAtual < 1) {
+        paginaAtual = 1;
+    }
 
     try {
         conn = ligarBD();
@@ -170,14 +189,40 @@
             }
         }
 
+        /*
+         * Contar produtos para calcular o número total de páginas.
+         */
+        String sqlCount = "SELECT COUNT(*) AS total FROM produtos";
+        ps = conn.prepareStatement(sqlCount);
+        rs = ps.executeQuery();
+
+        if (rs.next()) {
+            totalProdutos = rs.getInt("total");
+        }
+
+        rs.close();
+        ps.close();
+
+        totalPaginas = (int) Math.ceil(totalProdutos / (double) produtosPorPagina);
+
+        if (totalPaginas < 1) {
+            totalPaginas = 1;
+        }
+
+        if (paginaAtual > totalPaginas) {
+            paginaAtual = totalPaginas;
+        }
+
     } catch (NumberFormatException e) {
-        erro = "Preço ou stock inválido.";
+        erro = "Preço, stock ou página inválida.";
         e.printStackTrace();
 
     } catch (Exception e) {
         erro = "Erro ao gerir produtos.";
         e.printStackTrace();
     }
+
+    int offset = (paginaAtual - 1) * produtosPorPagina;
 %>
 
 <!DOCTYPE html>
@@ -188,6 +233,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        .paginacao {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .paginacao a,
+        .paginacao span {
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            border: 1px solid #d1d5db;
+            color: #2e7d32;
+            background: white;
+        }
+
+        .paginacao a:hover {
+            background: #e8f5e9;
+        }
+
+        .paginacao .ativa {
+            background: #2e7d32;
+            color: white;
+            border-color: #2e7d32;
+        }
+
+        .info-paginacao {
+            text-align: center;
+            color: #666;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
 
@@ -214,7 +299,7 @@
             <h2>Inserir Novo Produto</h2>
         <% } %>
 
-        <form method="post" action="admin_produtos.jsp">
+        <form method="post" action="admin_produtos.jsp" accept-charset="UTF-8">
 
             <input type="hidden" name="id_produto" value="<%= editId %>">
 
@@ -260,6 +345,11 @@
 
     <h2>Lista de Produtos</h2>
 
+    <p class="info-paginacao">
+        A mostrar página <strong><%= paginaAtual %></strong> de <strong><%= totalPaginas %></strong>.
+        Total de produtos: <strong><%= totalProdutos %></strong>.
+    </p>
+
     <table class="tabela">
         <thead>
             <tr>
@@ -277,8 +367,14 @@
 
         <%
             try {
-                String sqlLista = "SELECT * FROM produtos ORDER BY id DESC";
+                String sqlLista =
+                    "SELECT * FROM produtos " +
+                    "ORDER BY id DESC " +
+                    "LIMIT ? OFFSET ?";
+
                 ps = conn.prepareStatement(sqlLista);
+                ps.setInt(1, produtosPorPagina);
+                ps.setInt(2, offset);
                 rs = ps.executeQuery();
 
                 boolean temProdutos = false;
@@ -308,17 +404,17 @@
                     <% } %>
                 </td>
                 <td>
-                    <a class="btn-pequeno" href="admin_produtos.jsp?acao=editar&id=<%= id %>">Editar</a>
+                    <a class="btn-pequeno" href="admin_produtos.jsp?acao=editar&id=<%= id %>&pagina=<%= paginaAtual %>">Editar</a>
 
                     <% if (ativo) { %>
                         <a class="btn-pequeno danger"
-                           href="admin_produtos.jsp?acao=inativar&id=<%= id %>"
+                           href="admin_produtos.jsp?acao=inativar&id=<%= id %>&pagina=<%= paginaAtual %>"
                            onclick="return confirm('Tem a certeza que deseja inativar este produto?');">
                             Inativar
                         </a>
                     <% } else { %>
                         <a class="btn-pequeno"
-                           href="admin_produtos.jsp?acao=reativar&id=<%= id %>"
+                           href="admin_produtos.jsp?acao=reativar&id=<%= id %>&pagina=<%= paginaAtual %>"
                            onclick="return confirm('Tem a certeza que deseja reativar este produto?');">
                             Reativar
                         </a>
@@ -361,6 +457,32 @@
 
         </tbody>
     </table>
+
+    <div class="paginacao">
+
+        <% if (paginaAtual > 1) { %>
+            <a href="admin_produtos.jsp?pagina=<%= paginaAtual - 1 %>">Anterior</a>
+        <% } %>
+
+        <%
+            for (int i = 1; i <= totalPaginas; i++) {
+                if (i == paginaAtual) {
+        %>
+                    <span class="ativa"><%= i %></span>
+        <%
+                } else {
+        %>
+                    <a href="admin_produtos.jsp?pagina=<%= i %>"><%= i %></a>
+        <%
+                }
+            }
+        %>
+
+        <% if (paginaAtual < totalPaginas) { %>
+            <a href="admin_produtos.jsp?pagina=<%= paginaAtual + 1 %>">Seguinte</a>
+        <% } %>
+
+    </div>
 
     <div class="links">
         <p><a href="dashboard_admin.jsp">Voltar à administração</a></p>
