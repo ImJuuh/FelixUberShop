@@ -74,11 +74,11 @@ CREATE TABLE movimentos_carteira (
     FOREIGN KEY (carteira_destino_id) REFERENCES carteiras(id)
 );
 
-INSERT INTO utilizadores (username, password, nome, email, telefone, morada, perfil)
+INSERT INTO utilizadores (username, password, nome, email, telefone, morada, perfil, ativo)
 VALUES
-('cliente', 'cliente', 'Cliente Teste', 'cliente@felix.pt', '910000001', 'Rua do Cliente', 'cliente'),
-('funcionario', 'funcionario', 'Funcionário Teste', 'funcionario@felix.pt', '910000002', 'Rua do Funcionário', 'funcionario'),
-('admin', 'admin', 'Administrador Teste', 'admin@felix.pt', '910000003', 'Rua do Admin', 'admin');
+('cliente', SHA2('cliente', 256), 'Cliente Teste', 'cliente@felixubershop.pt', '910000001', 'Rua do Cliente', 'cliente', TRUE),
+('funcionario', SHA2('funcionario', 256), 'Funcionário Teste', 'funcionario@felixubershop.pt', '910000002', 'Rua do Funcionário', 'funcionario', TRUE),
+('admin', SHA2('admin', 256), 'Administrador Teste', 'admin@felixubershop.pt', '910000003', 'Rua do Administrador', 'admin', TRUE);
 
 INSERT INTO carteiras (utilizador_id, nome, saldo, tipo)
 VALUES
