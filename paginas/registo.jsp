@@ -54,7 +54,7 @@
 
                     psInserirUser = conn.prepareStatement(sqlInserirUser, Statement.RETURN_GENERATED_KEYS);
                     psInserirUser.setString(1, username);
-                    psInserirUser.setString(2, password);
+                    psInserirUser.setString(2, gerarHash(password));
                     psInserirUser.setString(3, nome);
                     psInserirUser.setString(4, email);
                     psInserirUser.setString(5, telefone);
